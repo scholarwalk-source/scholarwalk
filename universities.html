@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="Search universities worldwide by country, degree level, field of study, and tuition budget.">
+<meta property="og:title" content="University Search — ScholarWalk">
+<meta property="og:description" content="Search universities worldwide by country, degree level, field of study, and tuition budget.">
+<meta property="og:type" content="website">
+<title>University Search — ScholarWalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFCFE; --bg-alt:#F1F6FB; --surface:#FFFFFF; --ink:#0F1B2E; --ink-muted:#5B6B82;
+    --blue:#2451B8; --blue-deep:#163B7A; --blue-light:#E8EFFC; --green:#1C8C6B; --green-light:#E4F5EE;
+    --border:#E4E9F2; --shadow: 0 20px 40px -22px rgba(15,27,46,.18); --shadow-sm: 0 8px 20px -12px rgba(15,27,46,.15);
+    --radius-lg:24px; --radius-md:16px; --radius-sm:10px;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif;
+    --amber:#9A6B12; --amber-light:#FCF3DF; --skeleton:#E9EEF5;
+  }
+  html.dark{
+    --bg:#0A0F1D; --bg-alt:#0E1526; --surface:#121A2E; --ink:#EDF1F8; --ink-muted:#93A2BC;
+    --blue:#6C97F2; --blue-deep:#9DB9F7; --blue-light:#182644; --green:#3FD3A1; --green-light:#123329;
+    --border:#233052; --shadow: 0 24px 48px -22px rgba(0,0,0,.55); --shadow-sm: 0 10px 22px -14px rgba(0,0,0,.5);
+    --amber:#E8C36B; --amber-light:#2E2712; --skeleton:#1B2540;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:var(--font-body); line-height:1.5; }
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer;}
+  svg{display:block;}
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
+  .font-display{ font-family:var(--font-display); }
+
+  header{ position:sticky; top:0; z-index:100; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1180px; margin:0 auto; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:-.01em; }
+  .logo-mark{ width:34px; height:34px; flex-shrink:0; }
+  nav.links{ display:none; align-items:center; gap:28px; }
+  @media(min-width:900px){ nav.links{ display:flex; } }
+  nav.links a{ font-size:14.5px; font-weight:500; color:var(--ink-muted); transition:color .2s; }
+  nav.links a:hover, nav.links a.active{ color:var(--ink); }
+  .nav-right{ display:flex; align-items:center; gap:14px; }
+  .icon-btn{ display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); transition:all .2s; }
+  .icon-btn:hover{ color:var(--ink); border-color:var(--blue); }
+  .icon-btn svg{ width:17px; height:17px; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border-radius:999px; font-weight:600; font-size:14.5px; border:1px solid transparent; transition:all .2s ease; white-space:nowrap; }
+  .btn-primary{ background:var(--blue); color:#fff; box-shadow:var(--shadow-sm); }
+  .btn-primary:hover{ background:var(--blue-deep); transform:translateY(-1px); }
+  .btn-outline{ background:transparent; border-color:var(--border); color:var(--ink); }
+  .btn-outline:hover{ border-color:var(--green); color:var(--green); }
+  .btn-sm{ padding:9px 16px; font-size:13.5px; }
+
+  /* ---------- PAGE HEAD ---------- */
+  .page-head{ padding:44px 0 8px; }
+  .page-head span.eyebrow{ font-size:13px; font-weight:700; color:var(--green); letter-spacing:.04em; text-transform:uppercase; }
+  .page-head h1{ font-family:var(--font-display); font-weight:700; font-size:clamp(28px,3.6vw,38px); letter-spacing:-.02em; margin:10px 0 8px; }
+  .page-head p{ color:var(--ink-muted); font-size:15.5px; max-width:560px; }
+  .sample-note{
+    margin-top:16px; padding:10px 16px; border-radius:var(--radius-sm); display:inline-block;
+    background:var(--amber-light); color:var(--amber); font-size:12.5px; font-weight:600;
+  }
+
+  /* ---------- SIDEBAR LAYOUT ---------- */
+  .search-layout{ display:grid; grid-template-columns:270px 1fr; gap:32px; padding:30px 0 100px; align-items:start; }
+  @media(max-width:900px){ .search-layout{ grid-template-columns:1fr; } }
+
+  .sidebar{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:22px; position:sticky; top:88px; box-shadow:var(--shadow-sm);
+  }
+  @media(max-width:900px){ .sidebar{ position:static; } }
+  .sidebar h3{ font-family:var(--font-display); font-weight:600; font-size:15px; margin-bottom:16px; }
+  .filter-field{ margin-bottom:18px; }
+  .filter-field label{ display:block; font-size:12.5px; font-weight:600; color:var(--ink-muted); margin-bottom:7px; }
+  .filter-field .input-wrap{ position:relative; }
+  .filter-field .input-wrap svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:var(--ink-muted); }
+  .filter-field input, .filter-field select{
+    width:100%; height:42px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-alt);
+    color:var(--ink); font-family:inherit; font-size:13.5px; padding:0 14px 0 36px;
+  }
+  .filter-field select{ padding:0 14px; appearance:none; background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6B82' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:15px; }
+  .filter-field input:focus, .filter-field select:focus{ outline:none; border-color:var(--blue); }
+  .checkbox-field{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink-muted); font-weight:500; cursor:pointer; margin-bottom:12px; }
+  .checkbox-field input{ width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }
+  .clear-filters{ width:100%; margin-top:6px; padding:11px; border-radius:var(--radius-sm); border:1px solid var(--border); background:none; color:var(--ink-muted); font-size:13px; font-weight:600; }
+  .clear-filters:hover{ border-color:var(--ink-muted); color:var(--ink); }
+
+  /* ---------- RESULTS ---------- */
+  .results-meta{ margin-bottom:16px; font-size:14px; color:var(--ink-muted); display:flex; justify-content:space-between; align-items:center; }
+  .university-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media(min-width:640px){ .university-grid{ grid-template-columns:1fr 1fr; } }
+
+  .uni-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+    overflow:hidden; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    display:flex; flex-direction:column; animation:cardIn .3s ease;
+  }
+  @keyframes cardIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .uni-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); border-color:transparent; }
+  .uni-banner{ height:92px; display:flex; align-items:center; justify-content:space-between; padding:16px 18px; color:#fff; position:relative; }
+  .uni-banner .rank-badge{ background:rgba(255,255,255,.22); backdrop-filter:blur(4px); padding:4px 11px; border-radius:999px; font-size:11.5px; font-weight:700; }
+  .uni-banner .save-toggle{ background:rgba(255,255,255,.22); border:none; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; }
+  .uni-banner .save-toggle svg{ width:15px; height:15px; }
+  .uni-initials{ font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:.02em; }
+
+  .uni-body{ padding:18px; display:flex; flex-direction:column; gap:9px; flex-grow:1; }
+  .uni-body h3{ font-family:var(--font-display); font-size:16px; font-weight:600; line-height:1.3; }
+  .uni-location{ font-size:12.5px; color:var(--ink-muted); display:flex; align-items:center; gap:5px; }
+  .uni-location svg{ width:12px; height:12px; }
+  .uni-stats{ display:flex; flex-wrap:wrap; gap:7px; margin-top:2px; }
+  .uni-stat{ font-size:11.5px; font-weight:600; padding:4px 9px; border-radius:999px; background:var(--blue-light); color:var(--blue); }
+  .uni-stat.green{ background:var(--green-light); color:var(--green); }
+  .uni-programs{ font-size:12.5px; color:var(--ink-muted); flex-grow:1; }
+  .uni-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-top:13px; border-top:1px solid var(--border); }
+  .compare-field{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-muted); font-weight:600; cursor:pointer; }
+  .compare-field input{ width:14px; height:14px; accent-color:var(--green); cursor:pointer; }
+
+  .empty{ text-align:center; padding:70px 20px; color:var(--ink-muted); grid-column:1/-1; }
+
+  /* ---------- SKELETON ---------- */
+  .skeleton-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
+  .skeleton-banner{ height:92px; background:var(--skeleton); animation:pulse 1.3s ease-in-out infinite; }
+  .skeleton-body{ padding:18px; display:flex; flex-direction:column; gap:10px; }
+  .skeleton-line{ height:12px; border-radius:6px; background:var(--skeleton); animation:pulse 1.3s ease-in-out infinite; }
+  .skeleton-line.w60{ width:60%; } .skeleton-line.w80{ width:80%; } .skeleton-line.w40{ width:40%; height:22px; margin-top:4px; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
+
+  .load-more-wrap{ text-align:center; margin-top:30px; }
+  .load-more-btn{ padding:13px 30px; border-radius:999px; border:1px solid var(--border); background:var(--surface); font-weight:600; font-size:14px; color:var(--ink); }
+  .load-more-btn:hover{ border-color:var(--blue); color:var(--blue); }
+  .load-more-btn:disabled{ opacity:.5; cursor:default; }
+
+  /* ---------- COMPARE TRAY ---------- */
+  .compare-tray{ position:fixed; left:0; right:0; bottom:-100px; z-index:200; transition:bottom .3s ease; background:var(--surface); border-top:1px solid var(--border); box-shadow:0 -12px 30px -16px rgba(15,27,46,.25); padding:16px 28px; }
+  .compare-tray.open{ bottom:0; }
+  .compare-tray-inner{ max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .compare-tray .names{ font-size:14px; color:var(--ink-muted); }
+  .compare-tray .names strong{ color:var(--ink); }
+
+  .compare-section{ display:none; padding:40px 0 100px; }
+  .compare-section.open{ display:block; }
+  .compare-table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-md); }
+  table.compare-table{ width:100%; border-collapse:collapse; min-width:640px; }
+  table.compare-table th, table.compare-table td{ padding:14px 18px; text-align:left; font-size:13.5px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  table.compare-table th{ background:var(--bg-alt); font-family:var(--font-display); font-weight:600; color:var(--ink); }
+  table.compare-table td.row-label{ font-weight:600; color:var(--ink-muted); background:var(--bg-alt); }
+  table.compare-table tr:last-child td{ border-bottom:none; }
+
+  footer{ border-top:1px solid var(--border); padding:32px 0; text-align:center; font-size:13.5px; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="16" stroke="var(--blue)" stroke-width="2"/>
+        <path d="M9 14.5L17 10L25 14.5L17 19L9 14.5Z" fill="var(--blue)"/>
+        <path d="M12.5 16.3V21C12.5 21 14.5 23 17 23C19.5 23 21.5 21 21.5 21V16.3" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>ScholarWalk</span>
+    </a>
+    <nav class="links">
+      <a href="universities.html" class="active">Universities</a>
+      <a href="scholarships.html">Scholarships</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#countries">Countries</a>
+      <a href="study-lounge.html">Study Lounge</a>
+    </nav>
+    <div class="nav-right">
+      <button class="icon-btn" id="darkToggle" aria-label="Toggle dark mode">
+        <svg id="darkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      </button>
+      <a href="signup.html" class="btn btn-primary">Get Started</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">University Search</span>
+    <h1>Find the right university for you</h1>
+    <p>Filter by country, tuition, program language, and degree type to build your shortlist.</p>
+    <span class="sample-note">Showing sample data for demonstration — replace with your real university catalog before launch.</span>
+  </div>
+
+  <div class="search-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h3>Filters</h3>
+      <div class="filter-field">
+        <label for="searchInput">Search</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="University or city…">
+        </div>
+      </div>
+      <div class="filter-field">
+        <label for="countryFilter">Country</label>
+        <select id="countryFilter"><option value="">Any country</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="tuitionFilter">Tuition range / year</label>
+        <select id="tuitionFilter">
+          <option value="">Any budget</option>
+          <option value="0-10000">$0 – $10,000</option>
+          <option value="10000-20000">$10,000 – $20,000</option>
+          <option value="20000-35000">$20,000 – $35,000</option>
+          <option value="35000-999999">$35,000+</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label for="languageFilter">Program language</label>
+        <select id="languageFilter"><option value="">Any language</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="degreeFilter">Degree type</label>
+        <select id="degreeFilter"><option value="">Any level</option></select>
+      </div>
+      <div class="filter-field">
+        <label>Extras</label>
+        <label class="checkbox-field"><input type="checkbox" id="scholarshipOnly"> Scholarships available</label>
+        <label class="checkbox-field"><input type="checkbox" id="onlineOnly"> Online programs</label>
+      </div>
+      <button class="clear-filters" id="clearFilters">Clear all filters</button>
+    </aside>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="results-meta" id="resultsMeta"></div>
+      <div class="university-grid" id="universityGrid"></div>
+      <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+        <button class="load-more-btn" id="loadMoreBtn">Load more universities</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARE TABLE -->
+<div class="wrap compare-section" id="compareSection">
+  <div style="margin-bottom:24px;">
+    <h2 class="font-display" style="font-size:24px; font-weight:700; margin-bottom:6px;">Compare universities</h2>
+    <p style="color:var(--ink-muted); font-size:14.5px;">Side-by-side view of your selected universities.</p>
+  </div>
+  <div class="compare-table-wrap">
+    <table class="compare-table" id="compareTable"></table>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">© 2026 ScholarWalk. All rights reserved.</div>
+</footer>
+
+<!-- COMPARE TRAY -->
+<div class="compare-tray" id="compareTray">
+  <div class="compare-tray-inner">
+    <div class="names" id="compareNames"></div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline btn-sm" id="clearCompare">Clear</button>
+      <button class="btn btn-primary btn-sm" id="viewCompare">Compare now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* dark mode */
+const darkIcon = document.getElementById('darkIcon');
+document.getElementById('darkToggle').addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  darkIcon.innerHTML = isDark
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+    : '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>';
+});
+
+/* ============================================================
+   MOCK DATABASE — a plain JS array standing in for a real API.
+   In production, replace fetchUniversities() below with an
+   actual fetch() call to your backend / database endpoint;
+   everything downstream (filtering, pagination, rendering)
+   already expects an async, paginated response shape, so the
+   swap should be close to a one-function change.
+   Tuition and ranking figures are illustrative placeholders —
+   replace with your verified catalog before launch.
+   ============================================================ */
+const UNIVERSITY_DB = [
+  { name:"University of Toronto", country:"Canada", city:"Toronto", rank:"Top 25", tuition:34000, levels:["Bachelor's","Master's","PhD"], fields:["Business/Management","Engineering","Computer & Information Systems"], language:"English", scholarships:true, online:false, gradient:"#2451B8,#163B7A" },
+  { name:"University of Melbourne", country:"Australia", city:"Melbourne", rank:"Top 40", tuition:38000, levels:["Bachelor's","Master's","PhD"], fields:["Medicine","Biology/Life Sciences","Law & Legal Studies"], language:"English", scholarships:true, online:false, gradient:"#1C8C6B,#0F5C43" },
+  { name:"Technical University of Munich", country:"Germany", city:"Munich", rank:"Top 50", tuition:6000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Computer & Information Systems"], language:"English/German", scholarships:true, online:false, gradient:"#9A6B12,#6B4A0C" },
+  { name:"University College Dublin", country:"Ireland", city:"Dublin", rank:"Top 200", tuition:22000, levels:["Bachelor's","Master's"], fields:["Business/Management","Law & Legal Studies"], language:"English", scholarships:true, online:false, gradient:"#2451B8,#1C8C6B" },
+  { name:"University of Manchester", country:"United Kingdom", city:"Manchester", rank:"Top 35", tuition:29000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Business/Management","Biology/Life Sciences"], language:"English", scholarships:true, online:true, gradient:"#8A1E3C,#5A1327" },
+  { name:"National University of Singapore", country:"Singapore", city:"Singapore", rank:"Top 15", tuition:27000, levels:["Bachelor's","Master's","PhD"], fields:["Computer & Information Systems","Engineering","Business/Management"], language:"English", scholarships:true, online:false, gradient:"#163B7A,#0B2450" },
+  { name:"Arizona State University", country:"United States", city:"Tempe", rank:"Top 150", tuition:31000, levels:["Bachelor's","Master's","PhD"], fields:["Business/Management","Computer & Information Systems","Education"], language:"English", scholarships:true, online:true, gradient:"#7A1F1F,#4A1212" },
+  { name:"University of Amsterdam", country:"Netherlands", city:"Amsterdam", rank:"Top 60", tuition:16000, levels:["Bachelor's","Master's","PhD"], fields:["Economics","Psychology","Business/Management"], language:"English/Dutch", scholarships:true, online:false, gradient:"#2451B8,#0F2E6B" },
+  { name:"University of British Columbia", country:"Canada", city:"Vancouver", rank:"Top 45", tuition:33000, levels:["Bachelor's","Master's","PhD"], fields:["Biology/Life Sciences","Engineering","Environmental Science"], language:"English", scholarships:true, online:false, gradient:"#1C8C6B,#123329" },
+  { name:"KTH Royal Institute of Technology", country:"Sweden", city:"Stockholm", rank:"Top 100", tuition:18000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Computer & Information Systems"], language:"English", scholarships:true, online:false, gradient:"#163B7A,#2451B8" },
+  { name:"University of Auckland", country:"New Zealand", city:"Auckland", rank:"Top 90", tuition:26000, levels:["Bachelor's","Master's","PhD"], fields:["Medicine","Business/Management","Arts, Visual & Performing"], language:"English", scholarships:false, online:false, gradient:"#9A6B12,#FCF3DF" },
+  { name:"Sciences Po", country:"France", city:"Paris", rank:"Top 5 (Politics)", tuition:15000, levels:["Bachelor's","Master's"], fields:["Political Science/Social Science","Law & Legal Studies"], language:"English/French", scholarships:true, online:false, gradient:"#2451B8,#8A1E3C" },
+  { name:"Tsinghua University", country:"China", city:"Beijing", rank:"Top 20", tuition:8000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Computer & Information Systems"], language:"English/Mandarin", scholarships:true, online:false, gradient:"#7A1F1F,#2451B8" },
+  { name:"University of Cape Town", country:"South Africa", city:"Cape Town", rank:"Top 200", tuition:9000, levels:["Bachelor's","Master's","PhD"], fields:["Medicine","Biology/Life Sciences","Environmental Science"], language:"English", scholarships:true, online:false, gradient:"#1C8C6B,#9A6B12" },
+  { name:"Bocconi University", country:"Italy", city:"Milan", rank:"Top 10 (Business)", tuition:17000, levels:["Bachelor's","Master's"], fields:["Business/Management","Economics","Finance"], language:"English", scholarships:true, online:false, gradient:"#163B7A,#7A1F1F" },
+  { name:"Seoul National University", country:"South Korea", city:"Seoul", rank:"Top 30", tuition:7000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Computer & Information Systems","Business/Management"], language:"English/Korean", scholarships:true, online:false, gradient:"#2451B8,#1C8C6B" },
+  { name:"University of Edinburgh", country:"United Kingdom", city:"Edinburgh", rank:"Top 30", tuition:28000, levels:["Bachelor's","Master's","PhD"], fields:["Medicine","Law & Legal Studies","Arts, Visual & Performing"], language:"English", scholarships:true, online:false, gradient:"#8A1E3C,#2451B8" },
+  { name:"ETH Zurich", country:"Switzerland", city:"Zurich", rank:"Top 10", tuition:1500, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Computer & Information Systems"], language:"English/German", scholarships:true, online:false, gradient:"#163B7A,#9A6B12" },
+  { name:"McGill University", country:"Canada", city:"Montreal", rank:"Top 40", tuition:28000, levels:["Bachelor's","Master's","PhD"], fields:["Medicine","Business/Management","Law & Legal Studies"], language:"English/French", scholarships:true, online:false, gradient:"#2451B8,#1C8C6B" },
+  { name:"University of Tokyo", country:"Japan", city:"Tokyo", rank:"Top 25", tuition:5000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Medicine","Computer & Information Systems"], language:"English/Japanese", scholarships:true, online:false, gradient:"#7A1F1F,#163B7A" },
+  { name:"Universiti Malaya", country:"Malaysia", city:"Kuala Lumpur", rank:"Top 250", tuition:4000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Business/Management"], language:"English/Malay", scholarships:true, online:false, gradient:"#1C8C6B,#2451B8" },
+  { name:"American University of Beirut", country:"Lebanon", city:"Beirut", rank:"Top 300", tuition:20000, levels:["Bachelor's","Master's"], fields:["Medicine","Business/Management","Engineering"], language:"English", scholarships:true, online:false, gradient:"#9A6B12,#7A1F1F" },
+  { name:"Trinity College Dublin", country:"Ireland", city:"Dublin", rank:"Top 100", tuition:21000, levels:["Bachelor's","Master's","PhD"], fields:["Arts, Visual & Performing","Law & Legal Studies","Medicine"], language:"English", scholarships:true, online:false, gradient:"#163B7A,#1C8C6B" },
+  { name:"Copenhagen Business School", country:"Denmark", city:"Copenhagen", rank:"Top 50 (Business)", tuition:14000, levels:["Bachelor's","Master's"], fields:["Business/Management","Finance"], language:"English/Danish", scholarships:true, online:false, gradient:"#2451B8,#9A6B12" },
+  { name:"University of Warsaw", country:"Poland", city:"Warsaw", rank:"Top 300", tuition:5000, levels:["Bachelor's","Master's","PhD"], fields:["Economics","Political Science/Social Science"], language:"English/Polish", scholarships:true, online:false, gradient:"#7A1F1F,#1C8C6B" },
+  { name:"Istanbul Technical University", country:"Turkey", city:"Istanbul", rank:"Top 400", tuition:3000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering"], language:"English/Turkish", scholarships:true, online:false, gradient:"#9A6B12,#163B7A" },
+  { name:"University of Ghana", country:"Ghana", city:"Accra", rank:"Top 500", tuition:6000, levels:["Bachelor's","Master's"], fields:["Business/Management","Medicine"], language:"English", scholarships:true, online:false, gradient:"#1C8C6B,#7A1F1F" },
+  { name:"Nazarbayev University", country:"Kazakhstan", city:"Astana", rank:"Top 350", tuition:12000, levels:["Bachelor's","Master's","PhD"], fields:["Engineering","Business/Management"], language:"English", scholarships:true, online:false, gradient:"#2451B8,#7A1F1F" },
+  { name:"University of the Philippines", country:"Philippines", city:"Quezon City", rank:"Top 400", tuition:2000, levels:["Bachelor's","Master's"], fields:["Business/Management","Engineering"], language:"English/Filipino", scholarships:true, online:false, gradient:"#163B7A,#8A1E3C" },
+  { name:"Free University of Tbilisi", country:"Georgia", city:"Tbilisi", rank:"Top 500", tuition:4000, levels:["Bachelor's","Master's"], fields:["Business/Management","Law & Legal Studies"], language:"English/Georgian", scholarships:true, online:false, gradient:"#1C8C6B,#9A6B12" }
+];
+
+/* Simulated async "API" — filters + paginates server-side style,
+   with an artificial delay so the loading skeleton has something
+   to show. Swap the body of this function for a real fetch() to
+   your backend once one exists; the call signature (filters, page,
+   pageSize) → Promise<{results, total, hasMore}> is designed to
+   match what a real REST/GraphQL endpoint would typically return. */
+function fetchUniversities({ filters, page, pageSize }){
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      const matched = UNIVERSITY_DB.filter(u=>{
+        const q = filters.q;
+        const matchesQ = !q || u.name.toLowerCase().includes(q) || u.city.toLowerCase().includes(q);
+        const matchesCountry = !filters.country || u.country === filters.country;
+        const matchesDegree = !filters.degree || u.levels.includes(filters.degree);
+        const matchesLanguage = !filters.language || u.language.split('/').includes(filters.language);
+        const matchesTuition = !filters.tuitionRange || (u.tuition >= filters.tuitionRange[0] && u.tuition <= filters.tuitionRange[1]);
+        const matchesScholarship = !filters.scholarshipOnly || u.scholarships;
+        const matchesOnline = !filters.onlineOnly || u.online;
+        return matchesQ && matchesCountry && matchesDegree && matchesLanguage && matchesTuition && matchesScholarship && matchesOnline;
+      });
+      const end = page * pageSize;
+      resolve({
+        results: matched.slice(0, end),
+        total: matched.length,
+        hasMore: end < matched.length
+      });
+    }, 420); /* simulated network latency */
+  });
+}
+
+/* ---------------- BUILD FILTER OPTIONS (from full DB, not filtered results) ---------------- */
+function uniqueSorted(values){ return [...new Set(values)].sort((a,b)=>a.localeCompare(b)); }
+const countryFilter = document.getElementById('countryFilter');
+uniqueSorted(UNIVERSITY_DB.map(u=>u.country)).forEach(c=>{
+  const opt = document.createElement('option'); opt.value = c; opt.textContent = c; countryFilter.appendChild(opt);
+});
+const degreeFilter = document.getElementById('degreeFilter');
+uniqueSorted(UNIVERSITY_DB.flatMap(u=>u.levels)).forEach(l=>{
+  const opt = document.createElement('option'); opt.value = l; opt.textContent = l; degreeFilter.appendChild(opt);
+});
+const languageFilter = document.getElementById('languageFilter');
+uniqueSorted(UNIVERSITY_DB.flatMap(u=>u.language.split('/'))).forEach(l=>{
+  const opt = document.createElement('option'); opt.value = l; opt.textContent = l; languageFilter.appendChild(opt);
+});
+
+/* ---------------- STATE ---------------- */
+const saved = new Set();
+const compared = new Set();
+const PAGE_SIZE = 6;
+let currentPage = 1;
+let isLoading = false;
+
+function escapeHtml(str){ const div = document.createElement('div'); div.textContent = str ?? ''; return div.innerHTML; }
+function initials(name){ return name.split(' ').filter(w=>w.length>2 || /^[A-Z]/.test(w)).slice(0,3).map(w=>w[0]).join('').toUpperCase().slice(0,3); }
+function bookmarkIcon(filled){
+  return filled
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21 12 16l-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21 12 16l-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+}
+
+const grid = document.getElementById('universityGrid');
+const meta = document.getElementById('resultsMeta');
+const loadMoreWrap = document.getElementById('loadMoreWrap');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+function getFilters(){
+  const tuitionVal = document.getElementById('tuitionFilter').value;
+  return {
+    q: document.getElementById('searchInput').value.trim().toLowerCase(),
+    country: countryFilter.value,
+    degree: degreeFilter.value,
+    language: languageFilter.value,
+    tuitionRange: tuitionVal ? tuitionVal.split('-').map(Number) : null,
+    scholarshipOnly: document.getElementById('scholarshipOnly').checked,
+    onlineOnly: document.getElementById('onlineOnly').checked
+  };
+}
+
+function renderSkeleton(count){
+  grid.innerHTML = Array.from({length: count}).map(()=>`
+    <div class="skeleton-card">
+      <div class="skeleton-banner"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line w80"></div>
+        <div class="skeleton-line w40"></div>
+        <div class="skeleton-line w60"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderCard(u){
+  const div = document.createElement('div');
+  div.className = 'uni-card';
+  const isSaved = saved.has(u.name);
+  const isCompared = compared.has(u.name);
+  const [c1,c2] = u.gradient.split(',');
+  div.innerHTML = `
+    <div class="uni-banner" style="background:linear-gradient(135deg, ${c1}, ${c2});">
+      <span class="uni-initials">${initials(u.name)}</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="rank-badge">${escapeHtml(u.rank)}</span>
+        <button class="save-toggle" data-name="${escapeHtml(u.name)}">${bookmarkIcon(isSaved)}</button>
+      </div>
+    </div>
+    <div class="uni-body">
+      <h3>${escapeHtml(u.name)}</h3>
+      <div class="uni-location">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-7.5 8-13a8 8 0 1 0-16 0c0 5.5 8 13 8 13Z"/><circle cx="12" cy="9" r="3"/></svg>
+        ${escapeHtml(u.city)}, ${escapeHtml(u.country)}
+      </div>
+      <div class="uni-stats">
+        <span class="uni-stat">$${u.tuition.toLocaleString()}/yr</span>
+        <span class="uni-stat green">${escapeHtml(u.language)}</span>
+        ${u.scholarships ? '<span class="uni-stat green">Scholarships</span>' : ''}
+        ${u.online ? '<span class="uni-stat">Online options</span>' : ''}
+      </div>
+      <p class="uni-programs">${escapeHtml(u.fields.join(', '))}</p>
+      <div class="uni-footer">
+        <label class="compare-field">
+          <input type="checkbox" class="compare-check" data-name="${escapeHtml(u.name)}" ${isCompared ? 'checked' : ''}>
+          Compare
+        </label>
+        <a href="signup.html" class="btn btn-outline btn-sm">Get guidance →</a>
+      </div>
+    </div>`;
+  return div;
+}
+
+function attachCardListeners(){
+  grid.querySelectorAll('.save-toggle').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const name = btn.dataset.name;
+      if(saved.has(name)){ saved.delete(name); btn.innerHTML = bookmarkIcon(false); }
+      else{ saved.add(name); btn.innerHTML = bookmarkIcon(true); }
+    });
+  });
+  grid.querySelectorAll('.compare-check').forEach(chk=>{
+    chk.addEventListener('change', ()=>{
+      const name = chk.dataset.name;
+      if(chk.checked){
+        if(compared.size >= 4){ chk.checked = false; alert('You can compare up to 4 universities at a time.'); return; }
+        compared.add(name);
+      } else { compared.delete(name); }
+      updateCompareTray();
+    });
+  });
+}
+
+async function loadResults(page){
+  isLoading = true;
+  if(page === 1) renderSkeleton(PAGE_SIZE);
+  loadMoreBtn.disabled = true;
+  loadMoreBtn.textContent = 'Loading…';
+
+  const { results, total, hasMore } = await fetchUniversities({ filters: getFilters(), page, pageSize: PAGE_SIZE });
+
+  grid.innerHTML = '';
+  meta.innerHTML = `<span>${total} universit${total===1?'y':'ies'} found</span>`;
+  if(total === 0){
+    grid.innerHTML = `<div class="empty">No universities match your filters. Try broadening your search.</div>`;
+  } else {
+    results.forEach(u=> grid.appendChild(renderCard(u)));
+    attachCardListeners();
+  }
+
+  loadMoreWrap.style.display = hasMore ? 'block' : 'none';
+  loadMoreBtn.disabled = false;
+  loadMoreBtn.textContent = 'Load more universities';
+  isLoading = false;
+}
+
+function resetAndLoad(){ currentPage = 1; loadResults(1); }
+
+['searchInput'].forEach(id=>document.getElementById(id).addEventListener('input', resetAndLoad));
+['countryFilter','degreeFilter','languageFilter','tuitionFilter'].forEach(id=>document.getElementById(id).addEventListener('change', resetAndLoad));
+['scholarshipOnly','onlineOnly'].forEach(id=>document.getElementById(id).addEventListener('change', resetAndLoad));
+
+loadMoreBtn.addEventListener('click', ()=>{
+  if(isLoading) return;
+  currentPage++;
+  loadResults(currentPage);
+});
+
+document.getElementById('clearFilters').addEventListener('click', ()=>{
+  document.getElementById('searchInput').value = '';
+  countryFilter.value = '';
+  degreeFilter.value = '';
+  languageFilter.value = '';
+  document.getElementById('tuitionFilter').value = '';
+  document.getElementById('scholarshipOnly').checked = false;
+  document.getElementById('onlineOnly').checked = false;
+  resetAndLoad();
+});
+
+/* ---------------- COMPARE TRAY ---------------- */
+const compareTray = document.getElementById('compareTray');
+const compareNames = document.getElementById('compareNames');
+function updateCompareTray(){
+  if(compared.size === 0){ compareTray.classList.remove('open'); return; }
+  compareTray.classList.add('open');
+  compareNames.innerHTML = `<strong>${compared.size}</strong> selected: ${[...compared].join(', ')}`;
+}
+document.getElementById('clearCompare').addEventListener('click', ()=>{
+  compared.clear();
+  document.querySelectorAll('.compare-check').forEach(c=>c.checked=false);
+  updateCompareTray();
+  document.getElementById('compareSection').classList.remove('open');
+});
+document.getElementById('viewCompare').addEventListener('click', ()=>{
+  buildCompareTable();
+  document.getElementById('compareSection').classList.add('open');
+  document.getElementById('compareSection').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+function buildCompareTable(){
+  const selected = UNIVERSITY_DB.filter(u=>compared.has(u.name));
+  const table = document.getElementById('compareTable');
+  const rows = [
+    { label:'University', get:u=>u.name },
+    { label:'Country / City', get:u=>`${u.city}, ${u.country}` },
+    { label:'Ranking', get:u=>u.rank },
+    { label:'Tuition / year', get:u=>`$${u.tuition.toLocaleString()}` },
+    { label:'Degree levels', get:u=>u.levels.join(', ') },
+    { label:'Fields', get:u=>u.fields.join(', ') },
+    { label:'Language', get:u=>u.language },
+    { label:'Scholarships', get:u=>u.scholarships ? 'Yes' : 'No' },
+    { label:'Online options', get:u=>u.online ? 'Yes' : 'No' }
+  ];
+  let html = '<thead><tr><th>Detail</th>' + selected.map(u=>`<th>${escapeHtml(u.name)}</th>`).join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    html += `<tr><td class="row-label">${r.label}</td>` + selected.map(u=>`<td>${escapeHtml(String(r.get(u)))}</td>`).join('') + '</tr>';
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+loadResults(1);
+</script>
+</body>
+</html>
