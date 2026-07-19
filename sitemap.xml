@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="https://www.xml-sitemaps.com/css/sitemap.css"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+       <loc>https://www.scholarwalk.com/</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>1.0000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/universities.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/scholarships.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/packages.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/study-lounge.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/signup.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.8000</priority>
+  </url>
+  <url>
+       <loc>https://www.scholarwalk.com/index.html</loc>
+       <lastmod>2026-07-19T09:17:23+00:00</lastmod>
+       <changefreq>daily</changefreq>
+       <priority>0.6400</priority>
+  </url>
+</urlset>
