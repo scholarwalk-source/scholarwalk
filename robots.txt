@@ -1,0 +1,9 @@
+# ScholarWalk — robots.txt
+User-agent: *
+Allow: /
+
+# Transactional / personalized pages — not useful in search results
+Disallow: /checkout.html
+Disallow: /success.html
+
+Sitemap: https://yourdomain.com/sitemap.xml
