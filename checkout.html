@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+try{
+  if(localStorage.getItem('scholarwalk_lang') === 'ar'){
+    document.documentElement.setAttribute('lang','ar');
+    document.documentElement.setAttribute('dir','rtl');
+  }
+}catch(e){}
+</script>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XWFDK972TX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XWFDK972TX');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="Review your ScholarWalk application details and complete secure payment via Stripe.">
+<meta property="og:title" content="Checkout — ScholarWalk">
+<meta property="og:description" content="Review your ScholarWalk application details and complete secure payment via Stripe.">
+<meta property="og:type" content="website">
+<title>Checkout — ScholarWalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFCFE; --bg-alt:#F1F6FB; --surface:#FFFFFF; --ink:#0F1B2E; --ink-muted:#5B6B82;
+    --blue:#2451B8; --blue-deep:#163B7A; --blue-light:#E8EFFC; --green:#1C8C6B; --green-light:#E4F5EE;
+    --border:#E4E9F2; --shadow: 0 20px 40px -22px rgba(15,27,46,.18); --shadow-sm: 0 8px 20px -12px rgba(15,27,46,.15);
+    --radius-lg:24px; --radius-md:16px; --radius-sm:10px;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif;
+    --amber:#9A6B12; --amber-light:#FCF3DF;
+  }
+  html.dark{
+    --bg:#0A0F1D; --bg-alt:#0E1526; --surface:#121A2E; --ink:#EDF1F8; --ink-muted:#93A2BC;
+    --blue:#6C97F2; --blue-deep:#9DB9F7; --blue-light:#182644; --green:#3FD3A1; --green-light:#123329;
+    --border:#233052; --shadow: 0 24px 48px -22px rgba(0,0,0,.55); --shadow-sm: 0 10px 22px -14px rgba(0,0,0,.5);
+    --amber:#E8C36B; --amber-light:#2E2712;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:var(--font-body); line-height:1.5; }
+  html[dir="rtl"] body{ font-family:'Cairo','Inter',sans-serif; }
+  html[dir="rtl"] .logo, html[dir="rtl"] .page-head h1, html[dir="rtl"] .pay-btn, html[dir="rtl"] .setup-note strong, html[dir="rtl"] .summary-total .label, html[dir="rtl"] .summary-total .value{ font-family:'Cairo','Space Grotesk',sans-serif; }
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer;}
+  svg{display:block;}
+  .wrap{ max-width:640px; margin:0 auto; padding:0 24px; }
+
+  header{ position:sticky; top:0; z-index:100; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1180px; margin:0 auto; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:-.01em; }
+  .lang-btn{
+    display:flex; align-items:center; gap:6px;
+    padding:0 14px; height:38px; border-radius:999px;
+    border:1px solid var(--border); background:var(--surface);
+    font-size:13.5px; font-weight:600; color:var(--ink);
+  }
+  .lang-btn svg{ width:15px; height:15px; }
+  @media(max-width:480px){
+    .nav-inner{ padding:12px 16px; }
+    .logo{ font-size:15px; gap:6px; min-width:0; }
+    .logo span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:120px; }
+    .logo-mark{ width:26px; height:26px; }
+    .icon-btn{ width:32px; height:32px; }
+    .icon-btn svg{ width:15px; height:15px; }
+    .lang-btn{ padding:0 9px; height:32px; font-size:11.5px; gap:4px; }
+    .btn{ padding:9px 14px; font-size:12.5px; }
+  }
+  .logo-mark{ width:34px; height:34px; flex-shrink:0; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border-radius:999px; font-weight:600; font-size:14.5px; border:1px solid transparent; transition:all .2s ease; }
+  .btn-outline{ background:transparent; border-color:var(--border); color:var(--ink); }
+  .btn-outline:hover{ border-color:var(--green); color:var(--green); }
+  .icon-btn{ display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); }
+
+  .page-head{ padding:56px 0 30px; text-align:center; }
+  .page-head span.eyebrow{ font-size:13px; font-weight:700; color:var(--green); letter-spacing:.04em; text-transform:uppercase; }
+  .page-head h1{ font-family:var(--font-display); font-weight:700; font-size:clamp(28px,4vw,38px); letter-spacing:-.02em; margin:12px 0 8px; }
+  .page-head p{ color:var(--ink-muted); font-size:15.5px; }
+
+  .summary-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:32px; margin-bottom:24px; }
+  .summary-row{ display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px dashed var(--border); font-size:14.5px; }
+  .summary-row:last-of-type{ border-bottom:none; }
+  .summary-row .label{ color:var(--ink-muted); }
+  .summary-row .value{ font-weight:600; }
+  .summary-total{ display:flex; justify-content:space-between; align-items:center; padding-top:20px; margin-top:6px; border-top:1px solid var(--border); }
+  .summary-total .label{ font-family:var(--font-display); font-weight:600; font-size:17px; }
+  .summary-total .value{ font-family:var(--font-display); font-weight:700; font-size:28px; color:var(--blue); }
+
+  .pay-btn{
+    width:100%; padding:16px; border-radius:var(--radius-sm); border:none; background:var(--blue); color:#fff;
+    font-family:var(--font-display); font-weight:600; font-size:16px; display:flex; align-items:center; justify-content:center; gap:10px;
+    box-shadow:var(--shadow-sm); transition:all .2s ease;
+  }
+  .pay-btn:hover{ background:var(--blue-deep); transform:translateY(-1px); }
+  .pay-btn svg{ width:20px; height:20px; }
+  .secure-note{ display:flex; align-items:center; justify-content:center; gap:6px; font-size:12.5px; color:var(--ink-muted); margin-top:14px; }
+  .secure-note svg{ width:14px; height:14px; }
+
+  .edit-link{ display:block; text-align:center; margin-top:18px; font-size:14px; color:var(--blue); font-weight:600; }
+
+  .setup-note{
+    background:var(--amber-light); border:1px solid var(--amber); border-radius:var(--radius-md);
+    padding:20px 22px; font-size:13.5px; color:var(--ink); margin-top:36px; line-height:1.65;
+  }
+  .setup-note strong{ color:var(--amber); display:block; margin-bottom:6px; font-family:var(--font-display); font-size:14.5px; }
+  .setup-note code{ background:var(--surface); padding:2px 6px; border-radius:5px; font-size:12.5px; }
+
+  .empty-state{ text-align:center; padding:60px 24px; color:var(--ink-muted); }
+  .empty-state a{ color:var(--blue); font-weight:600; }
+
+  footer{ border-top:1px solid var(--border); padding:32px 0; text-align:center; font-size:13.5px; color:var(--ink-muted); margin-top:60px; }
+</style>
+<style>
+  .ticker-bar{
+    position:relative; overflow:hidden; white-space:nowrap;
+    background:linear-gradient(90deg, #2451B8, #1C8C6B);
+    color:#fff; height:38px; display:flex; align-items:center;
+  }
+  .ticker-track{ display:flex; white-space:nowrap; animation:tickerScroll 26s linear infinite; will-change:transform; }
+  .ticker-track span{ display:inline-flex; align-items:center; padding:0 36px; font-size:12.5px; font-weight:700; letter-spacing:.02em; flex-shrink:0; font-family:Arial,sans-serif; }
+  @keyframes tickerScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  html[dir="rtl"] .ticker-track{ animation:tickerScrollRtl 26s linear infinite; }
+  @keyframes tickerScrollRtl{ from{ transform:translateX(0); } to{ transform:translateX(50%); } }
+  .ticker-close{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.2);
+    border:none; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; z-index:2;
+  }
+  html[dir="rtl"] .ticker-close{ right:auto; left:10px; }
+  .ticker-close svg{ width:12px; height:12px; }
+  .ticker-close:hover{ background:rgba(255,255,255,.35); }
+  @media(prefers-reduced-motion: reduce){ .ticker-track{ animation:none; overflow-x:auto; } }
+</style>
+</head>
+<body>
+<!-- ANNOUNCEMENT TICKER -->
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-track" id="tickerTrack"></div>
+  <button class="ticker-close" id="tickerClose" aria-label="Close announcement bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+<script>
+const TICKER_MESSAGES = {
+  en: ["The Johns Hopkins - Public Service Scholarship - Apply NOW"],
+  ar: ["منحة جونز هوبكنز للخدمة العامة - قدّم الآن"]
+};
+const bar = document.getElementById('tickerBar');
+const track = document.getElementById('tickerTrack');
+const SESSION_KEY = 'scholarwalk_ticker_dismissed';
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+function renderTicker(lang){
+  if(sessionStorage.getItem(SESSION_KEY)){ bar.style.display = 'none'; return; }
+  const itemsHtml = TICKER_MESSAGES[lang].map(m => '<span>' + escapeHtml(m) + '</span>').join('');
+  track.innerHTML = itemsHtml + itemsHtml;
+}
+renderTicker('en');
+document.getElementById('tickerClose').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  bar.style.display = 'none';
+  sessionStorage.setItem(SESSION_KEY, '1');
+});
+bar.style.cursor = 'pointer';
+bar.addEventListener('click', (e)=>{
+  if(e.target.closest('.ticker-close')) return;
+  window.location.href = 'pricing.html';
+});
+</script>
+
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="16" stroke="var(--blue)" stroke-width="2"/>
+        <path d="M9 14.5L17 10L25 14.5L17 19L9 14.5Z" fill="var(--blue)"/>
+        <path d="M12.5 16.3V21C12.5 21 14.5 23 17 23C19.5 23 21.5 21 21.5 21V16.3" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>ScholarWalk</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="icon-btn" id="darkToggle" aria-label="Toggle dark mode">
+        <svg id="darkIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      </button>
+      <button class="lang-btn" id="langToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        <span id="langLabel">EN</span>
+      </button>
+      <a href="index.html" class="btn btn-outline" data-i18n="back_home">Back to home</a>
+    </div>
+  </div>
+</header>
+
+<div id="app">
+  <!-- filled by JS -->
+</div>
+
+<footer>
+  <div class="wrap" style="max-width:1180px;" data-i18n="footer_disclaimer">ScholarWalk provides application guidance only and does not guarantee visa approval.</div>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+      <a href="https://www.instagram.com/scholarwalkco" target="_blank" rel="noopener" aria-label="Instagram" style="width:34px; height:34px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61591797042146" target="_blank" rel="noopener" aria-label="Facebook" style="width:34px; height:34px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3h-2a5 5 0 0 0-5 5v3H6v4h2v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <a href="https://www.tiktok.com/@scholarwalk?lang=en" target="_blank" rel="noopener" aria-label="TikTok" style="width:34px; height:34px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.8 3.7 4 4v3c-1.5 0-2.9-.4-4-1.2v6.4a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.1v3.1a2.5 2.5 0 1 0 1.8 2.4V3z"/></svg>
+      </a>
+    </div>
+</footer>
+
+<script>
+/* dark mode */
+const darkIcon = document.getElementById('darkIcon');
+document.getElementById('darkToggle').addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  darkIcon.innerHTML = isDark
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+    : '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>';
+});
+
+/* ============================================================
+   REPLACE THESE with your real Stripe Payment Links.
+   ============================================================ */
+const STRIPE_LINKS = {
+  quick_check:        "https://buy.stripe.com/test_4gM5kE3tC68Of6KghHa3u07",
+  scholarship_match:  "https://buy.stripe.com/test_3cIeVeggo54K7Eic1ra3u04",
+  application_review: "https://buy.stripe.com/test_9B65kEc0854K7EifdDa3u05",
+  premium_roadmap:    "https://buy.stripe.com/test_aFaaEY8NW0OucYCfdDa3u06",
+  jhu_sais_scholars:  "https://buy.stripe.com/test_3cIeVe0hqgNs1fUe9za3u08"
+};
+
+/* ---------------- TRANSLATIONS ---------------- */
+const t = {
+  en:{
+    back_home:'Back to home',
+    footer_disclaimer:'ScholarWalk provides application guidance only and does not guarantee visa approval.',
+    empty_1:"We couldn't find a pending signup.", empty_2:'Start your sign up →',
+    step_label:'Step 4 of 4', h1:'Review & pay', sub:'Confirm your details below, then complete payment securely with Stripe.',
+    lbl_name:'Name', lbl_email:'Email', lbl_citizenship:'Citizenship', lbl_degree:'Degree level',
+    lbl_country:'Target country', lbl_field:'Field of study', lbl_scholarship:'Scholarship of interest',
+    lbl_package:'Package', lbl_total:'Total due today',
+    credit_note:(price)=>`Change your mind? Upgrade to a higher package within 7 days and we'll credit the ${price} you paid today toward it.`,
+    pay_btn:(price)=>`Pay $${price} with Stripe`,
+    secure_note:'Payments are processed securely by Stripe. ScholarWalk never sees your card details.',
+    edit_link:'← Edit my information',
+    setup_title:'Setup note (for the site owner)',
+    setup_body:'All five Payment Links in <code>STRIPE_LINKS</code> are currently <strong>Stripe test-mode links</strong> (their URLs contain <code>/test_</code>) — they won\'t charge real cards. Before launch, create matching <strong>live-mode</strong> Payment Links in your Stripe Dashboard (Quick Check $19, Scholarship Match $39, Application Review $65, Premium Roadmap $99, Johns Hopkins SAIS Public Service Scholars $29) and swap the URLs in. Each link\'s "after payment" redirect should point to <code>https://yourdomain.com/success.html</code>. The checkout handler below automatically appends <code>prefilled_email</code> and <code>client_reference_id</code> to the link — both are natively supported by Stripe Payment Links, live or test.',
+    stripe_not_setup:(pkg)=>`Stripe Payment Link not set up yet for "${pkg}". See the setup note below the button.`
+  },
+  ar:{
+    back_home:'العودة للرئيسية',
+    footer_disclaimer:'توفر ScholarWalk إرشادات للتقديم فقط ولا تضمن الموافقة على التأشيرة.',
+    empty_1:'لم نتمكن من العثور على تسجيل معلّق.', empty_2:'ابدأ التسجيل ←',
+    step_label:'الخطوة 4 من 4', h1:'المراجعة والدفع', sub:'أكّد بياناتك أدناه، ثم أكمل الدفع بأمان عبر Stripe.',
+    lbl_name:'الاسم', lbl_email:'البريد الإلكتروني', lbl_citizenship:'الجنسية', lbl_degree:'المستوى الدراسي',
+    lbl_country:'الدولة المستهدفة', lbl_field:'مجال الدراسة', lbl_scholarship:'المنحة محل الاهتمام',
+    lbl_package:'الباقة', lbl_total:'الإجمالي المستحق اليوم',
+    credit_note:(price)=>`غيّرت رأيك؟ قم بالترقية إلى باقة أعلى خلال 7 أيام وسنخصم مبلغ ${price} الذي دفعته اليوم من قيمتها.`,
+    pay_btn:(price)=>`ادفع $${price} عبر Stripe`,
+    secure_note:'تتم معالجة المدفوعات بأمان عبر Stripe. لا تطّلع ScholarWalk أبدًا على بيانات بطاقتك.',
+    edit_link:'← تعديل بياناتي',
+    setup_title:'ملاحظة إعداد (لمالك الموقع)',
+    setup_body:'جميع روابط الدفع الخمسة في <code>STRIPE_LINKS</code> هي حاليًا <strong>روابط وضع الاختبار في Stripe</strong> (تحتوي عناوينها على <code>/test_</code>) — لن تقوم بخصم أي مبالغ حقيقية. قبل الإطلاق، أنشئ روابط دفع مطابقة في <strong>وضع الإنتاج الفعلي</strong> من لوحة تحكم Stripe (الفحص السريع 19$، مطابقة المنح 39$، مراجعة الطلب 65$، خارطة الطريق المميزة 99$، منحة جونز هوبكنز SAIS للخدمة العامة 29$) واستبدل الروابط. يجب أن يوجّه كل رابط بعد الدفع إلى <code>https://yourdomain.com/success.html</code>. يقوم معالج الدفع أدناه تلقائيًا بإضافة <code>prefilled_email</code> و <code>client_reference_id</code> إلى الرابط — وكلاهما مدعوم أصلاً من روابط دفع Stripe، سواء في وضع الإنتاج أو الاختبار.',
+    stripe_not_setup:(pkg)=>`لم يتم إعداد رابط دفع Stripe بعد لباقة "${pkg}". راجع ملاحظة الإعداد أسفل الزر.`
+  }
+};
+
+let currentLang = 'en';
+const app = document.getElementById('app');
+const raw = sessionStorage.getItem('scholarwalk_signup');
+let data = raw ? JSON.parse(raw) : null;
+
+function renderApp(lang){
+  const L = t[lang];
+  if(!data){
+    app.innerHTML = `
+      <div class="wrap">
+        <div class="empty-state">
+          <p>${L.empty_1}</p>
+          <p style="margin-top:8px;"><a href="signup.html">${L.empty_2}</a></p>
+        </div>
+      </div>`;
+    return;
+  }
+  app.innerHTML = `
+    <div class="page-head">
+      <span class="eyebrow">${L.step_label}</span>
+      <h1>${L.h1}</h1>
+      <p>${L.sub}</p>
+    </div>
+    <div class="wrap">
+      <div class="summary-card">
+        <div class="summary-row"><span class="label">${L.lbl_name}</span><span class="value">${escapeHtml(data.fullName)}</span></div>
+        <div class="summary-row"><span class="label">${L.lbl_email}</span><span class="value">${escapeHtml(data.email)}</span></div>
+        <div class="summary-row"><span class="label">${L.lbl_citizenship}</span><span class="value">${escapeHtml(data.citizenship)}</span></div>
+        <div class="summary-row"><span class="label">${L.lbl_degree}</span><span class="value">${escapeHtml(data.degreeLevel)}</span></div>
+        <div class="summary-row"><span class="label">${L.lbl_country}</span><span class="value">${escapeHtml(data.targetCountry)}</span></div>
+        <div class="summary-row"><span class="label">${L.lbl_field}</span><span class="value">${escapeHtml(data.fieldOfStudy)}</span></div>
+        ${data.scholarshipInterest ? `<div class="summary-row"><span class="label">${L.lbl_scholarship}</span><span class="value">${escapeHtml(data.scholarshipInterest)}</span></div>` : ''}
+        <div class="summary-row"><span class="label">${L.lbl_package}</span><span class="value">${escapeHtml(data.packageLabel)}</span></div>
+        <div class="summary-total"><span class="label">${L.lbl_total}</span><span class="value">$${escapeHtml(data.price)}</span></div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:flex-start; background:var(--green-light); color:var(--green); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:20px; font-size:13px; font-weight:600;">
+        <svg style="width:18px; height:18px; flex-shrink:0; margin-top:1px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <span>${L.credit_note('$' + escapeHtml(data.price))}</span>
+      </div>
+
+      <button class="pay-btn" id="payBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        ${L.pay_btn(escapeHtml(data.price))}
+      </button>
+      <p class="secure-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 11 4.6-2.3 8-6 8-11V5l-8-3Z"/></svg>
+        ${L.secure_note}
+      </p>
+      <a href="signup.html" class="edit-link">${L.edit_link}</a>
+
+      <div class="setup-note">
+        <strong>${L.setup_title}</strong>
+        ${L.setup_body}
+      </div>
+    </div>`;
+
+  document.getElementById('payBtn').addEventListener('click', ()=> redirectToStripeCheckout(data, lang));
+}
+
+function applyLang(lang){
+  currentLang = lang;
+  try{ localStorage.setItem('scholarwalk_lang', lang); }catch(e){}
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langLabel').textContent = lang === 'ar' ? 'AR' : 'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(t[lang][key] !== undefined) el.textContent = t[lang][key];
+  });
+  renderApp(lang);
+  renderTicker(lang);
+}
+document.getElementById('langToggle').addEventListener('click', ()=>{
+  applyLang(currentLang === 'en' ? 'ar' : 'en');
+});
+
+/**
+ * STRIPE CHECKOUT HANDLER — see original notes; unchanged behavior,
+ * now also passes the active language through for the error alert text.
+ */
+function redirectToStripeCheckout(data, lang){
+  const url = STRIPE_LINKS[data.package];
+  if(!url || url.includes('REPLACE_WITH')){
+    alert(t[lang].stripe_not_setup(data.packageLabel));
+    return;
+  }
+  const checkoutUrl = new URL(url);
+  if(data.email) checkoutUrl.searchParams.set('prefilled_email', data.email);
+  const referenceId = (data.email ? data.email.replace(/[^a-zA-Z0-9]/g, '_') : 'applicant') + '_' + Date.now();
+  checkoutUrl.searchParams.set('client_reference_id', referenceId);
+  window.location.href = checkoutUrl.toString();
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+let savedLang = 'en';
+try{ savedLang = localStorage.getItem('scholarwalk_lang') || 'en'; }catch(e){}
+applyLang(savedLang);
+</script>
+</body>
+</html>
