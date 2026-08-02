@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<script>
+try{
+  if(localStorage.getItem('scholarwalk_lang') === 'en'){
+    document.documentElement.setAttribute('lang','en');
+    document.documentElement.setAttribute('dir','ltr');
+  }
+}catch(e){}
+</script>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XWFDK972TX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XWFDK972TX');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="A cozy, focused study space with ambient sound and a built-in Pomodoro timer — take a break from application stress.">
+<meta property="og:title" content="Study Lounge — ScholarWalk">
+<meta property="og:description" content="A cozy, focused study space with ambient sound and a built-in Pomodoro timer.">
+<meta property="og:type" content="website">
+<title>Study Lounge — ScholarWalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#2451B8; --green:#1C8C6B; --amber:#E8A64C;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ height:100%; }
+  body{
+    font-family:var(--font-body); color:#F4EFE6; overflow-x:hidden;
+    background:linear-gradient(180deg, #171025 0%, #2A1B3D 45%, #4A2C4E 75%, #7A4258 100%);
+    min-height:100vh; position:relative;
+  }
+  html[dir="rtl"] body{ font-family:'Cairo','Inter',sans-serif; }
+  html[dir="rtl"] .logo, html[dir="rtl"] .lounge-title, html[dir="rtl"] .timer-display, html[dir="rtl"] .track-name, html[dir="rtl"] .res-head h2, html[dir="rtl"] .article-body h3, html[dir="rtl"] .guide-body h4, html[dir="rtl"] .qa-thread h4, html[dir="rtl"] .upsell-toast h4{ font-family:'Cairo','Space Grotesk',sans-serif; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  .lang-btn{
+    display:flex; align-items:center; gap:6px;
+    padding:0 16px; height:38px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06);
+    font-size:13px; font-weight:600; color:#fff; backdrop-filter:blur(6px);
+  }
+  .lang-btn:hover{ background:rgba(255,255,255,.14); }
+  .lang-btn svg{ width:14px; height:14px; }
+
+  /* ---------- SCENE ---------- */
+  .scene{ position:fixed; inset:0; overflow:hidden; z-index:0; }
+  .moon{
+    position:absolute; top:8%; right:14%; width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #FFF7E0, #F4D999 60%, #E8A64C 100%);
+    box-shadow:0 0 60px 18px rgba(244,217,153,.35);
+  }
+  .skyline{ position:absolute; bottom:0; left:0; right:0; height:38%; }
+  .skyline svg{ width:100%; height:100%; display:block; }
+  .window-glow{
+    position:absolute; bottom:0; left:0; right:0; height:45%;
+    background:radial-gradient(ellipse at 50% 100%, rgba(232,166,76,.18), transparent 70%);
+  }
+  .rain{ position:absolute; inset:0; pointer-events:none; }
+  .drop{
+    position:absolute; top:-10%; width:1.5px; height:60px; background:linear-gradient(to bottom, transparent, rgba(244,239,230,.35));
+    animation:fall linear infinite;
+  }
+  @keyframes fall{ to{ transform:translateY(120vh); } }
+  .stars{ position:absolute; inset:0; }
+  .star{ position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; opacity:.6; animation:twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{ opacity:.2; } 50%{ opacity:.9; } }
+
+  /* ---------- HEADER ---------- */
+  header{ position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:20px 28px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:700; font-size:18px; color:#fff; }
+  .back-link{
+    padding:10px 20px; border-radius:999px; border:1px solid rgba(255,255,255,.25); font-size:13.5px; font-weight:600;
+    color:#fff; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); transition:background .2s;
+  }
+  .back-link:hover{ background:rgba(255,255,255,.14); }
+  @media(max-width:600px){
+    .lounge-nav-link{ display:none; }
+    header{ padding:14px 16px; }
+    .logo{ font-size:14px; gap:6px; }
+    .logo span{ max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .logo svg{ width:24px; height:24px; }
+    .back-link{ padding:8px 14px; font-size:12px; }
+  }
+
+  /* ---------- MAIN CARD ---------- */
+  main{ position:relative; z-index:10; display:flex; align-items:center; justify-content:center; min-height:78vh; padding:20px; }
+  .lounge-card{
+    width:100%; max-width:440px; background:rgba(20,14,28,.55); backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.12); border-radius:28px; padding:40px 34px; text-align:center;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
+  }
+  .lounge-eyebrow{ font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#E8A64C; margin-bottom:10px; }
+  .lounge-title{ font-family:var(--font-display); font-weight:700; font-size:24px; margin-bottom:6px; }
+  .lounge-sub{ font-size:13.5px; color:rgba(244,239,230,.65); margin-bottom:30px; }
+
+  .timer-display{ font-family:var(--font-display); font-weight:700; font-size:64px; letter-spacing:-.02em; margin-bottom:6px; }
+  .timer-mode{ font-size:13px; color:rgba(244,239,230,.55); margin-bottom:26px; }
+  .timer-controls{ display:flex; gap:12px; justify-content:center; margin-bottom:34px; }
+  .timer-btn{
+    padding:13px 28px; border-radius:999px; font-weight:600; font-size:14.5px; border:none; transition:all .2s ease;
+  }
+  .timer-btn.primary{ background:var(--amber); color:#2A1B3D; }
+  .timer-btn.primary:hover{ filter:brightness(1.08); }
+  .timer-btn.ghost{ background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); }
+  .timer-btn.ghost:hover{ background:rgba(255,255,255,.16); }
+
+  .session-count{ font-size:12.5px; color:rgba(244,239,230,.5); margin-bottom:30px; }
+  .session-count strong{ color:#E8A64C; }
+
+  /* ---------- AUDIO PLAYER ---------- */
+  .player{ border-top:1px solid rgba(255,255,255,.12); padding-top:26px; }
+  .now-playing{ font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:rgba(244,239,230,.5); margin-bottom:6px; }
+  .track-name{ font-family:var(--font-display); font-weight:600; font-size:16px; margin-bottom:18px; }
+  .eq{ display:flex; align-items:flex-end; justify-content:center; gap:4px; height:24px; margin-bottom:18px; }
+  .eq span{ width:4px; background:var(--amber); border-radius:2px; animation:eqBounce 1.1s ease-in-out infinite; opacity:.85; }
+  .eq span:nth-child(1){ height:8px; animation-delay:.0s; }
+  .eq span:nth-child(2){ height:18px; animation-delay:.15s; }
+  .eq span:nth-child(3){ height:12px; animation-delay:.3s; }
+  .eq span:nth-child(4){ height:20px; animation-delay:.45s; }
+  .eq span:nth-child(5){ height:9px; animation-delay:.6s; }
+  .eq.paused span{ animation-play-state:paused; opacity:.35; }
+  @keyframes eqBounce{ 0%,100%{ transform:scaleY(.4); } 50%{ transform:scaleY(1); } }
+
+  .player-controls{ display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:18px; }
+  .player-btn{
+    width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
+    color:#fff; display:flex; align-items:center; justify-content:center; transition:background .2s;
+  }
+  .player-btn:hover{ background:rgba(255,255,255,.18); }
+  .player-btn.play-pause{ width:52px; height:52px; background:var(--amber); color:#2A1B3D; border:none; }
+  .player-btn svg{ width:18px; height:18px; }
+  .player-btn.play-pause svg{ width:20px; height:20px; }
+
+  .volume-row{ display:flex; align-items:center; gap:10px; }
+  .volume-row svg{ width:16px; height:16px; color:rgba(244,239,230,.6); flex-shrink:0; }
+  .volume-row input[type="range"]{ flex-grow:1; accent-color:var(--amber); }
+
+  .asset-note{ font-size:11.5px; color:rgba(244,239,230,.4); margin-top:20px; line-height:1.5; }
+
+  /* ---------- UPSELL TOAST ---------- */
+  .upsell-toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(140%);
+    z-index:50; max-width:380px; width:calc(100% - 40px);
+    background:#fff; color:#0F1B2E; border-radius:20px; padding:22px 24px; box-shadow:0 24px 48px -18px rgba(0,0,0,.5);
+    transition:transform .4s ease;
+  }
+  .upsell-toast.show{ transform:translateX(-50%) translateY(0); }
+  .upsell-toast h4{ font-family:var(--font-display); font-weight:700; font-size:15.5px; margin-bottom:6px; }
+  .upsell-toast p{ font-size:13.5px; color:#5B6B82; margin-bottom:14px; }
+  .upsell-toast .actions{ display:flex; gap:10px; }
+  .upsell-toast .btn-cta{ background:#2451B8; color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px; font-weight:600; border:none; }
+  .upsell-toast .btn-dismiss{ background:none; color:#5B6B82; font-size:13.5px; font-weight:600; border:none; padding:10px 6px; }
+
+  /* ============ RESOURCES SECTION (light theme, below the lounge) ============ */
+  .resources{ background:#FBFCFE; color:#0F1B2E; position:relative; z-index:10; }
+  .resources .wrap{ max-width:1100px; margin:0 auto; padding:0 28px; }
+  .res-section{ padding:70px 0; }
+  .res-head{ max-width:600px; margin-bottom:40px; }
+  .res-eyebrow{ font-size:12.5px; font-weight:700; color:#1C8C6B; text-transform:uppercase; letter-spacing:.05em; }
+  .res-head h2{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(24px,3vw,32px); margin:10px 0 8px; letter-spacing:-.01em; }
+  .res-head p{ color:#5B6B82; font-size:15px; }
+  .sample-tag{ display:inline-block; margin-top:10px; font-size:11.5px; font-weight:700; color:#9A6B12; background:#FCF3DF; padding:3px 10px; border-radius:99px; }
+
+  .article-grid{ display:grid; grid-template-columns:1fr; gap:18px; }
+  @media(min-width:720px){ .article-grid{ grid-template-columns:repeat(3,1fr); } }
+  .article-card{ background:#fff; border:1px solid #E4E9F2; border-radius:16px; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; }
+  .article-card:hover{ transform:translateY(-3px); box-shadow:0 20px 40px -22px rgba(15,27,46,.18); }
+  .article-banner{ height:110px; display:flex; align-items:center; justify-content:center; color:#fff; }
+  .article-banner svg{ width:32px; height:32px; opacity:.9; }
+  .article-body{ padding:20px; }
+  .article-tag{ font-size:11px; font-weight:700; color:#2451B8; background:#E8EFFC; padding:3px 9px; border-radius:99px; }
+  .article-body h3{ font-family:'Space Grotesk',sans-serif; font-size:15.5px; font-weight:600; margin:10px 0 6px; }
+  .article-body p{ font-size:13px; color:#5B6B82; margin-bottom:10px; }
+  .article-meta{ font-size:12px; color:#93A2BC; }
+
+  .guide-grid{ display:grid; grid-template-columns:1fr; gap:14px; }
+  @media(min-width:720px){ .guide-grid{ grid-template-columns:1fr 1fr; } }
+  .guide-card{ display:flex; align-items:center; gap:16px; background:#fff; border:1px solid #E4E9F2; border-radius:14px; padding:18px 20px; }
+  .guide-icon{ width:44px; height:44px; border-radius:12px; background:#E4F5EE; color:#1C8C6B; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .guide-icon svg{ width:20px; height:20px; }
+  .guide-body h4{ font-family:'Space Grotesk',sans-serif; font-size:14.5px; font-weight:600; margin-bottom:3px; }
+  .guide-body p{ font-size:12.5px; color:#5B6B82; }
+  .guide-download{ margin-left:auto; flex-shrink:0; font-size:12.5px; font-weight:700; color:#2451B8; white-space:nowrap; }
+  html[dir="rtl"] .guide-download{ margin-left:0; margin-right:auto; }
+  .guide-download:hover{ text-decoration:underline; }
+
+  .qa-ask{ background:#fff; border:1px solid #E4E9F2; border-radius:16px; padding:22px; margin-bottom:26px; }
+  .qa-ask textarea, .qa-ask input{ width:100%; border:1px solid #E4E9F2; border-radius:10px; padding:12px 14px; font-family:inherit; font-size:13.5px; margin-bottom:10px; box-sizing:border-box; }
+  .qa-ask textarea{ resize:vertical; min-height:70px; }
+  .qa-ask button{ padding:11px 22px; border-radius:999px; background:#2451B8; color:#fff; font-weight:600; font-size:13.5px; border:none; }
+  .qa-ask button:hover{ background:#163B7A; }
+  .qa-thread{ display:flex; gap:14px; background:#fff; border:1px solid #E4E9F2; border-radius:14px; padding:18px 20px; margin-bottom:12px; }
+  .qa-avatar{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; color:#fff; flex-shrink:0; }
+  .qa-thread h4{ font-size:14px; font-weight:600; margin-bottom:4px; }
+  .qa-thread p{ font-size:13px; color:#5B6B82; margin-bottom:8px; }
+  .qa-meta{ font-size:11.5px; color:#93A2BC; display:flex; gap:14px; }
+  .qa-meta span{ display:flex; align-items:center; gap:4px; }
+  .qa-meta svg{ width:13px; height:13px; }
+  .qa-confirm{ display:none; background:#E4F5EE; color:#1C8C6B; border-radius:12px; padding:16px 20px; font-size:13.5px; font-weight:600; margin-bottom:26px; }
+  .qa-confirm.show{ display:block; }
+
+  .resources-footer{ text-align:center; padding:32px 0; border-top:1px solid #E4E9F2; font-size:13px; color:#5B6B82; }
+</style>
+<style>
+  .ticker-bar{
+    position:relative; overflow:hidden; white-space:nowrap;
+    background:linear-gradient(90deg, #2451B8, #1C8C6B);
+    color:#fff; height:38px; display:flex; align-items:center;
+  }
+  .ticker-track{ display:flex; white-space:nowrap; animation:tickerScroll 26s linear infinite; will-change:transform; }
+  .ticker-track span{ display:inline-flex; align-items:center; padding:0 36px; font-size:12.5px; font-weight:700; letter-spacing:.02em; flex-shrink:0; font-family:Arial,sans-serif; }
+  @keyframes tickerScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .ticker-close{
+    position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.2);
+    border:none; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; z-index:2;
+  }
+  .ticker-close svg{ width:12px; height:12px; }
+  .ticker-close:hover{ background:rgba(255,255,255,.35); }
+  @media(prefers-reduced-motion: reduce){ .ticker-track{ animation:none; overflow-x:auto; } }
+</style>
+</head>
+<body>
+<!-- ANNOUNCEMENT TICKER -->
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-track" id="tickerTrack"></div>
+  <button class="ticker-close" id="tickerClose" aria-label="Close announcement bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+<script>
+/* ============================================================
+   EDIT THIS LIST to change the scrolling announcement text.
+   This same block appears on all 8 pages (each page is a
+   self-contained file), so update it in each file you want
+   the change to appear on -- most people keep it identical
+   across the whole site.
+   ============================================================ */
+const TICKER_MESSAGES = {
+  en: ["The Johns Hopkins - Public Service Scholars - Apply Now for $29"],
+  ar: ["منحة جونز هوبكنز للخدمة العامة - قدّم الآن مقابل 29$"]
+};
+const bar = document.getElementById('tickerBar');
+const track = document.getElementById('tickerTrack');
+const SESSION_KEY = 'scholarwalk_ticker_dismissed';
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+function renderTicker(lang){
+  if(sessionStorage.getItem(SESSION_KEY)){ bar.style.display = 'none'; return; }
+  const itemsHtml = TICKER_MESSAGES[lang].map(m => '<span>' + escapeHtml(m) + '</span>').join('');
+  track.innerHTML = itemsHtml + itemsHtml;
+}
+renderTicker('en');
+document.getElementById('tickerClose').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  bar.style.display = 'none';
+  sessionStorage.setItem(SESSION_KEY, '1');
+});
+bar.style.cursor = 'pointer';
+bar.addEventListener('click', (e)=>{
+  if(e.target.closest('.ticker-close')) return;
+  window.location.href = 'https://buy.stripe.com/test_3cIeVe0hqgNs1fUe9za3u08';
+});
+</script>
+
+
+
+<div class="scene">
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+  <div class="skyline">
+    <svg viewBox="0 0 800 200" preserveAspectRatio="none">
+      <polygon points="0,200 0,120 30,120 30,90 60,90 60,130 100,130 100,60 140,60 140,140 180,140 180,100 220,100 220,150 260,150 260,80 300,80 300,145 340,145 340,110 380,110 380,155 420,155 420,70 460,70 460,140 500,140 500,95 540,95 540,150 580,150 580,115 620,115 620,145 660,145 660,85 700,85 700,140 740,140 740,120 800,120 800,200"
+        fill="#120A1C"/>
+    </svg>
+  </div>
+  <div class="window-glow"></div>
+  <div class="rain" id="rain"></div>
+</div>
+
+<header>
+  <a href="index.html" class="logo">
+    <svg width="28" height="28" viewBox="0 0 34 34" fill="none">
+      <circle cx="17" cy="17" r="16" stroke="#E8A64C" stroke-width="2"/>
+      <path d="M9 14.5L17 10L25 14.5L17 19L9 14.5Z" fill="#E8A64C"/>
+      <path d="M12.5 16.3V21C12.5 21 14.5 23 17 23C19.5 23 21.5 21 21.5 21V16.3" stroke="#F4EFE6" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span data-i18n="lounge_brand">ScholarWalk Lounge</span>
+  </a>
+  <nav class="lounge-nav" style="display:flex; align-items:center; gap:16px;">
+    <a href="index.html" class="lounge-nav-link" style="font-size:13.5px; font-weight:600; color:rgba(244,239,230,.75);" data-i18n="nav_home">Home</a>
+    <a href="universities.html" class="lounge-nav-link" style="font-size:13.5px; font-weight:600; color:rgba(244,239,230,.75);" data-i18n="nav_universities">Universities</a>
+    <a href="scholarships.html" class="lounge-nav-link" style="font-size:13.5px; font-weight:600; color:rgba(244,239,230,.75);" data-i18n="nav_scholarships">Scholarships</a>
+    <a href="pricing.html" class="lounge-nav-link" style="font-size:13.5px; font-weight:600; color:rgba(244,239,230,.75);" data-i18n="nav_pricing">Apply Here</a>
+    <button class="lang-btn" id="langToggle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+      <span id="langLabel">AR</span>
+    </button>
+    <a href="index.html" class="back-link" data-i18n="back_home">← Back to home</a>
+  </nav>
+</header>
+
+<main>
+  <div class="lounge-card">
+    <span class="lounge-eyebrow" data-i18n="lounge_eyebrow">Cozy study lounge</span>
+    <h1 class="lounge-title" data-i18n="lounge_title">Take a focused break</h1>
+    <p class="lounge-sub" data-i18n="lounge_sub">25 minutes of deep focus. No notifications, just you and the rain.</p>
+
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <div class="timer-mode" id="timerMode" data-i18n="timer_ready">Ready when you are</div>
+    <div class="timer-controls">
+      <button class="timer-btn primary" id="timerToggle" data-i18n="timer_start">Start studying</button>
+      <button class="timer-btn ghost" id="timerReset" data-i18n="timer_reset">Reset</button>
+    </div>
+    <div class="session-count"><span data-i18n="sessions_today">Sessions completed today:</span> <strong id="sessionCount">0</strong></div>
+
+    <div class="player">
+      <div class="now-playing" data-i18n="now_playing">Now playing</div>
+      <div class="track-name" id="trackName">Rainy Window — Lo-fi Loop</div>
+      <div class="eq paused" id="eq">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="player-controls">
+        <button class="player-btn" id="prevTrack" aria-label="Previous track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="player-btn play-pause" id="playPause" aria-label="Play">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="player-btn" id="nextTrack" aria-label="Next track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 6v12l8.5-6z"/></svg>
+        </button>
+      </div>
+      <div class="volume-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        <input type="range" id="volumeSlider" min="0" max="100" value="60">
+      </div>
+      <audio id="audioPlayer" loop></audio>
+      <p class="asset-note" data-i18n="asset_note">Playing a placeholder tone — add your own royalty-free lo-fi tracks in the TRACKS array near the top of the script to replace it.</p>
+    </div>
+  </div>
+</main>
+
+<div class="resources">
+  <div class="wrap">
+
+    <!-- FEATURED ARTICLES -->
+    <section class="res-section" id="articles">
+      <div class="res-head">
+        <span class="res-eyebrow" data-i18n="res_blog_eyebrow">From the blog</span>
+        <h2 data-i18n="res_articles_h2">Featured articles</h2>
+        <p data-i18n="res_articles_p">Practical advice from the application trenches.</p>
+        <span class="sample-tag" data-i18n="sample_tag_articles">Sample content — replace with real posts</span>
+      </div>
+      <div class="article-grid" id="articleGrid"></div>
+    </section>
+
+    <!-- GUIDES & DOWNLOADABLES -->
+    <section class="res-section" id="guides" style="padding-top:0;">
+      <div class="res-head">
+        <span class="res-eyebrow" data-i18n="res_free_eyebrow">Free resources</span>
+        <h2 data-i18n="res_guides_h2">Guides &amp; downloadables</h2>
+        <p data-i18n="res_guides_p">Checklists and templates you can use right away.</p>
+        <span class="sample-tag" data-i18n="sample_tag_guides">Placeholder links — attach real PDFs before launch</span>
+      </div>
+      <div class="guide-grid" id="guideGrid"></div>
+    </section>
+
+    <!-- COMMUNITY Q&A -->
+    <section class="res-section" id="community" style="padding-top:0;">
+      <div class="res-head">
+        <span class="res-eyebrow" data-i18n="res_community_eyebrow">Community</span>
+        <h2 data-i18n="res_community_h2">Ask the community</h2>
+        <p data-i18n="res_community_p">Questions from students just like you.</p>
+      </div>
+
+      <div class="qa-confirm" id="qaConfirm" data-i18n="qa_confirm">✓ Thanks — your question was submitted. Our team (and the community) will get back to you.</div>
+
+      <div class="qa-ask">
+        <input type="text" id="qaName" data-i18n-placeholder="qa_name_ph" placeholder="Your name (or leave blank to stay anonymous)">
+        <textarea id="qaQuestion" data-i18n-placeholder="qa_question_ph" placeholder="What do you want to ask?"></textarea>
+        <button id="qaSubmit" data-i18n="qa_submit">Post question</button>
+      </div>
+
+      <div id="qaThreadList"></div>
+    </section>
+
+  </div>
+  <div class="resources-footer">
+    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:12px;">
+      <a href="https://www.instagram.com/scholarwalkco" target="_blank" rel="noopener" aria-label="Instagram" style="width:34px; height:34px; border-radius:50%; border:1px solid #E4E9F2; background:#fff; color:#5B6B82; display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1"/></svg>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61591797042146" target="_blank" rel="noopener" aria-label="Facebook" style="width:34px; height:34px; border-radius:50%; border:1px solid #E4E9F2; background:#fff; color:#5B6B82; display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3h-2a5 5 0 0 0-5 5v3H6v4h2v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <a href="https://www.tiktok.com/@scholarwalk?lang=en" target="_blank" rel="noopener" aria-label="TikTok" style="width:34px; height:34px; border-radius:50%; border:1px solid #E4E9F2; background:#fff; color:#5B6B82; display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.8 3.7 4 4v3c-1.5 0-2.9-.4-4-1.2v6.4a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.1v3.1a2.5 2.5 0 1 0 1.8 2.4V3z"/></svg>
+      </a>
+    </div>
+    <span data-i18n="footer_copyright">© 2026 ScholarWalk. All rights reserved.</span>
+  </div>
+</div>
+
+<div class="upsell-toast" id="upsellToast">
+  <h4 data-i18n="toast_h4">Great study session! 🎉</h4>
+  <p data-i18n="toast_p">Need someone to proofread that essay you're working on? Our expert editors are ready.</p>
+  <div class="actions">
+    <a href="signup.html" class="btn-cta" data-i18n="toast_cta">Get started — $25</a>
+    <button class="btn-dismiss" id="dismissToast" data-i18n="toast_dismiss">Not now</button>
+  </div>
+</div>
+
+<script>
+let currentLang = 'en';
+/* ---------------- FEATURED ARTICLES (sample content) ---------------- */
+const articleIcons = {
+  essay: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  visa: '<path d="M12 2 4 5v6c0 5 3.4 8.7 8 11 4.6-2.3 8-6 8-11V5l-8-3Z"/>',
+  test: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  budget: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1 1-2 3-2s3 1 3 2-1 1.5-3 2-3 1-3 2 1 2 3 2 3-1 3-2"/>',
+  letter: '<path d="M4 4h16v16H4z"/><path d="m4 4 8 8 8-8"/>',
+  countdown: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>'
+};
+const articles = {
+  en:[
+    { icon:'essay', color:'#2451B8', tag:'Applications', title:'5 Common Scholarship Essay Mistakes', excerpt:'The small errors that quietly sink otherwise strong applications — and how to avoid them.', meta:'6 min read' },
+    { icon:'visa', color:'#1C8C6B', tag:'Visas', title:'How to Get a Student Visa Approved Faster', excerpt:'What actually speeds up processing, and what\'s just a myth.', meta:'8 min read' },
+    { icon:'test', color:'#9A6B12', tag:'English Tests', title:'IELTS vs TOEFL: Which Should You Take?', excerpt:'A practical comparison based on your target country and program.', meta:'5 min read' },
+    { icon:'budget', color:'#8A1E3C', tag:'Money', title:'Budgeting for Your First Semester Abroad', excerpt:'A realistic breakdown of costs students often forget to plan for.', meta:'7 min read' },
+    { icon:'letter', color:'#163B7A', tag:'Applications', title:'How to Ask for a Strong Recommendation Letter', excerpt:'Templates and timing tips that get professors to say yes.', meta:'4 min read' },
+    { icon:'countdown', color:'#2451B8', tag:'Departure', title:'3 Months Before Departure: The Checklist', excerpt:'Everything to lock down before your flight, in the right order.', meta:'6 min read' }
+  ],
+  ar:[
+    { icon:'essay', color:'#2451B8', tag:'طلبات التقديم', title:'5 أخطاء شائعة في مقال المنحة الدراسية', excerpt:'الأخطاء الصغيرة التي تُضعف بهدوء طلبات قوية في الأساس — وكيفية تجنبها.', meta:'قراءة 6 دقائق' },
+    { icon:'visa', color:'#1C8C6B', tag:'التأشيرات', title:'كيف تحصل على تأشيرة الطالب بشكل أسرع', excerpt:'ما الذي يسرّع المعالجة فعليًا، وما هو مجرد خرافة.', meta:'قراءة 8 دقائق' },
+    { icon:'test', color:'#9A6B12', tag:'اختبارات اللغة', title:'IELTS مقابل TOEFL: أيهما تختار؟', excerpt:'مقارنة عملية بناءً على وجهتك وبرنامجك الدراسي.', meta:'قراءة 5 دقائق' },
+    { icon:'budget', color:'#8A1E3C', tag:'المال', title:'وضع ميزانية لفصلك الدراسي الأول في الخارج', excerpt:'تفصيل واقعي للتكاليف التي ينساها الطلاب غالبًا عند التخطيط.', meta:'قراءة 7 دقائق' },
+    { icon:'letter', color:'#163B7A', tag:'طلبات التقديم', title:'كيف تطلب خطاب توصية قوي', excerpt:'قوالب ونصائح توقيت تجعل الأساتذة يوافقون.', meta:'قراءة 4 دقائق' },
+    { icon:'countdown', color:'#2451B8', tag:'السفر', title:'3 أشهر قبل السفر: قائمة التحقق', excerpt:'كل ما يجب إنجازه قبل رحلتك، بالترتيب الصحيح.', meta:'قراءة 6 دقائق' }
+  ]
+};
+const articleGrid = document.getElementById('articleGrid');
+function renderArticles(lang){
+  articleGrid.innerHTML = '';
+  articles[lang].forEach(a=>{
+    const card = document.createElement('div');
+    card.className = 'article-card';
+    card.innerHTML = `
+      <div class="article-banner" style="background:${a.color};">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${articleIcons[a.icon]}</svg>
+      </div>
+      <div class="article-body">
+        <span class="article-tag">${a.tag}</span>
+        <h3>${a.title}</h3>
+        <p>${a.excerpt}</p>
+        <div class="article-meta">${a.meta}</div>
+      </div>`;
+    articleGrid.appendChild(card);
+  });
+}
+
+/* ---------------- GUIDES & DOWNLOADABLES (placeholder links) ---------------- */
+const guides = {
+  en:[
+    { title:'Complete Scholarship Application Checklist', desc:'Every step, in order, from shortlist to submission.' },
+    { title:'Student Visa Document Checklist', desc:'Country-by-country required documents at a glance.' },
+    { title:'Personal Statement Template', desc:'A proven structure you can adapt to your own story.' },
+    { title:'Study Abroad Budget Planner', desc:'A simple spreadsheet to plan your first year of costs.' }
+  ],
+  ar:[
+    { title:'قائمة تحقق كاملة لطلب المنحة الدراسية', desc:'كل خطوة، بالترتيب، من القائمة المختصرة إلى التقديم.' },
+    { title:'قائمة تحقق مستندات تأشيرة الطالب', desc:'المستندات المطلوبة حسب كل دولة في لمحة واحدة.' },
+    { title:'قالب البيان الشخصي', desc:'هيكل مُجرّب يمكنك تكييفه مع قصتك الخاصة.' },
+    { title:'مخطط ميزانية الدراسة بالخارج', desc:'جدول بيانات بسيط لتخطيط تكاليف سنتك الأولى.' }
+  ]
+};
+const guideGrid = document.getElementById('guideGrid');
+function renderGuides(lang){
+  guideGrid.innerHTML = '';
+  guides[lang].forEach(g=>{
+    const card = document.createElement('div');
+    card.className = 'guide-card';
+    card.innerHTML = `
+      <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></div>
+      <div class="guide-body">
+        <h4>${g.title}</h4>
+        <p>${g.desc}</p>
+      </div>
+      <a href="#" class="guide-download" data-download-alert="1">${t[currentLang].guide_download}</a>`;
+    guideGrid.appendChild(card);
+  });
+  guideGrid.querySelectorAll('[data-download-alert]').forEach(a=>{
+    a.addEventListener('click', (e)=>{ e.preventDefault(); alert(t[currentLang].guide_alert); });
+  });
+}
+
+/* ---------------- COMMUNITY Q&A ---------------- */
+const qaThreads = {
+  en:[
+    { name:'Amara O.', color:'#2451B8', question:'Is a 3.2 GPA enough for a Master\'s scholarship in Germany?', replies:4, tag:'Scholarships' },
+    { name:'Diego R.', color:'#1C8C6B', question:'How early should I start my visa application before the semester starts?', replies:7, tag:'Visas' },
+    { name:'Priya K.', color:'#9A6B12', question:'Do universities in Canada accept Duolingo instead of IELTS?', replies:3, tag:'English Tests' },
+    { name:'Yusuf A.', color:'#8A1E3C', question:'What should I actually say in a visa interview about funding?', replies:9, tag:'Visas' }
+  ],
+  ar:[
+    { name:'Amara O.', color:'#2451B8', question:'هل يكفي معدل 3.2 للحصول على منحة ماجستير في ألمانيا؟', replies:4, tag:'المنح الدراسية' },
+    { name:'Diego R.', color:'#1C8C6B', question:'متى يجب أن أبدأ طلب التأشيرة قبل بدء الفصل الدراسي؟', replies:7, tag:'التأشيرات' },
+    { name:'Priya K.', color:'#9A6B12', question:'هل تقبل الجامعات في كندا Duolingo بدلاً من IELTS؟', replies:3, tag:'اختبارات اللغة' },
+    { name:'Yusuf A.', color:'#8A1E3C', question:'ماذا يجب أن أقول فعليًا في مقابلة التأشيرة بخصوص التمويل؟', replies:9, tag:'التأشيرات' }
+  ]
+};
+const qaThreadList = document.getElementById('qaThreadList');
+function initialsFor(name){ return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function renderQaThreads(lang){
+  qaThreadList.innerHTML = '';
+  qaThreads[lang].forEach(th=>{
+    const div = document.createElement('div');
+    div.className = 'qa-thread';
+    div.innerHTML = `
+      <div class="qa-avatar" style="background:${th.color};">${initialsFor(th.name)}</div>
+      <div>
+        <h4>${th.question}</h4>
+        <p>${t[lang].asked_by} ${th.name}</p>
+        <div class="qa-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-9.3 8.4A8.5 8.5 0 0 1 5 18l-3 1 1-3a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 11 3.5h.5a8.4 8.4 0 0 1 8 8v.1Z"/></svg>${th.replies} ${t[lang].replies}</span>
+          <span>${th.tag}</span>
+        </div>
+      </div>`;
+    qaThreadList.appendChild(div);
+  });
+}
+
+/* Same Formspree form used by signup.html and index.html —
+   one endpoint receives all three submission types. */
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xojgnyzv";
+
+document.getElementById('qaSubmit').addEventListener('click', async ()=>{
+  const name = document.getElementById('qaName').value.trim() || t[currentLang].anonymous;
+  const question = document.getElementById('qaQuestion').value.trim();
+  if(!question){ alert(t[currentLang].qa_need_question); return; }
+
+  const payload = {
+    _subject: 'New question on the Study Lounge from ' + name,
+    formType: 'question',
+    name, question
+  };
+
+  if(!FORMSPREE_ENDPOINT.includes('REPLACE_WITH')){
+    try{
+      await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(err){ console.error('Question submission failed:', err); }
+  } else {
+    console.warn('FORMSPREE_ENDPOINT is a placeholder — this question was not sent anywhere.');
+  }
+
+  document.getElementById('qaName').value = '';
+  document.getElementById('qaQuestion').value = '';
+  document.getElementById('qaConfirm').classList.add('show');
+});
+
+/* ---------------- AMBIENCE: stars + rain ---------------- */
+const stars = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random()*100 + '%';
+  s.style.top = Math.random()*55 + '%';
+  s.style.animationDelay = (Math.random()*3) + 's';
+  stars.appendChild(s);
+}
+const rain = document.getElementById('rain');
+for(let i=0;i<70;i++){
+  const d = document.createElement('div');
+  d.className = 'drop';
+  d.style.left = Math.random()*100 + '%';
+  d.style.animationDuration = (0.6 + Math.random()*0.6) + 's';
+  d.style.animationDelay = (Math.random()*2) + 's';
+  rain.appendChild(d);
+}
+
+/* ---------------- AUDIO TRACKS (placeholder) ---------------- */
+/* Replace these with real royalty-free lo-fi mp3 URLs — e.g. host
+   them yourself, or use a royalty-free library like Pixabay Music,
+   Free Music Archive, or your own licensed tracks. */
+const TRACKS = [
+  { name: 'Rainy Window — Lo-fi Loop', src: '' },
+  { name: 'Attic Study — Soft Piano', src: '' },
+  { name: 'Late Night Focus — Ambient Beats', src: '' }
+];
+let currentTrack = 0;
+const audioPlayer = document.getElementById('audioPlayer');
+const trackName = document.getElementById('trackName');
+const eq = document.getElementById('eq');
+const playIcon = document.getElementById('playIcon');
+let isPlaying = false;
+
+function loadTrack(i){
+  currentTrack = (i + TRACKS.length) % TRACKS.length;
+  trackName.textContent = TRACKS[currentTrack].name;
+  if(TRACKS[currentTrack].src){ audioPlayer.src = TRACKS[currentTrack].src; }
+}
+function setPlaying(playing){
+  isPlaying = playing;
+  eq.classList.toggle('paused', !playing);
+  playIcon.innerHTML = playing
+    ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
+  if(playing && TRACKS[currentTrack].src){ audioPlayer.play().catch(()=>{}); }
+  else{ audioPlayer.pause(); }
+}
+document.getElementById('playPause').addEventListener('click', ()=> setPlaying(!isPlaying));
+document.getElementById('nextTrack').addEventListener('click', ()=>{ loadTrack(currentTrack+1); if(isPlaying) setPlaying(true); });
+document.getElementById('prevTrack').addEventListener('click', ()=>{ loadTrack(currentTrack-1); if(isPlaying) setPlaying(true); });
+document.getElementById('volumeSlider').addEventListener('input', (e)=>{ audioPlayer.volume = e.target.value/100; });
+audioPlayer.volume = 0.6;
+loadTrack(0);
+
+/* ---------------- POMODORO TIMER ---------------- */
+const FOCUS_SECONDS = 25*60;
+let timeLeft = FOCUS_SECONDS;
+let timerRunning = false;
+let timerInterval = null;
+let sessionCount = 0;
+
+const timerDisplay = document.getElementById('timerDisplay');
+const timerMode = document.getElementById('timerMode');
+const timerToggle = document.getElementById('timerToggle');
+const sessionCountEl = document.getElementById('sessionCount');
+
+function formatTime(s){
+  const m = Math.floor(s/60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function updateDisplay(){ timerDisplay.textContent = formatTime(timeLeft); }
+
+function playChime(){
+  /* Simple two-tone chime via Web Audio API — no external sound file needed. */
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25].forEach((freq, i)=>{
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + i*0.25 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.25 + 0.6);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.25);
+      osc.stop(ctx.currentTime + i*0.25 + 0.6);
+    });
+  } catch(e){ /* Web Audio not available — silently skip the chime */ }
+}
+
+function startTimer(){
+  timerRunning = true;
+  timerToggle.textContent = t[currentLang].timer_pause;
+  timerMode.textContent = t[currentLang].timer_in_progress;
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      timerRunning = false;
+      sessionCount++;
+      sessionCountEl.textContent = sessionCount;
+      timerMode.textContent = t[currentLang].timer_complete;
+      timerToggle.textContent = t[currentLang].timer_start;
+      timeLeft = FOCUS_SECONDS;
+      updateDisplay();
+      playChime();
+      showUpsellToast();
+    }
+  }, 1000);
+}
+function pauseTimer(){
+  timerRunning = false;
+  clearInterval(timerInterval);
+  timerToggle.textContent = t[currentLang].timer_resume;
+  timerMode.textContent = t[currentLang].timer_paused;
+}
+timerToggle.addEventListener('click', ()=>{
+  if(timerRunning) pauseTimer();
+  else startTimer();
+});
+document.getElementById('timerReset').addEventListener('click', ()=>{
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timeLeft = FOCUS_SECONDS;
+  updateDisplay();
+  timerToggle.textContent = t[currentLang].timer_start;
+  timerMode.textContent = t[currentLang].timer_ready;
+});
+updateDisplay();
+
+/* ---------------- UPSELL TOAST ---------------- */
+const upsellToast = document.getElementById('upsellToast');
+function showUpsellToast(){ upsellToast.classList.add('show'); }
+document.getElementById('dismissToast').addEventListener('click', ()=>{
+  upsellToast.classList.remove('show');
+});
+
+/* ---------------- TRANSLATIONS ---------------- */
+const t = {
+  en:{
+    lounge_brand:'ScholarWalk Lounge', nav_home:'Home', nav_universities:'Universities', nav_scholarships:'Scholarships', nav_pricing:'Apply Here', back_home:'← Back to home',
+    lounge_eyebrow:'Cozy study lounge', lounge_title:'Take a focused break', lounge_sub:'25 minutes of deep focus. No notifications, just you and the rain.',
+    timer_ready:'Ready when you are', timer_start:'Start studying', timer_reset:'Reset', timer_pause:'Pause', timer_resume:'Resume',
+    timer_in_progress:'Focus session in progress…', timer_complete:'Session complete — nice work!', timer_paused:'Paused',
+    sessions_today:'Sessions completed today:', now_playing:'Now playing',
+    asset_note:'Playing a placeholder tone — add your own royalty-free lo-fi tracks in the TRACKS array near the top of the script to replace it.',
+    res_blog_eyebrow:'From the blog', res_articles_h2:'Featured articles', res_articles_p:'Practical advice from the application trenches.', sample_tag_articles:'Sample content — replace with real posts',
+    res_free_eyebrow:'Free resources', res_guides_h2:'Guides & downloadables', res_guides_p:'Checklists and templates you can use right away.', sample_tag_guides:'Placeholder links — attach real PDFs before launch',
+    res_community_eyebrow:'Community', res_community_h2:'Ask the community', res_community_p:'Questions from students just like you.',
+    qa_confirm:'✓ Thanks — your question was submitted. Our team (and the community) will get back to you.',
+    qa_name_ph:'Your name (or leave blank to stay anonymous)', qa_question_ph:'What do you want to ask?', qa_submit:'Post question',
+    qa_need_question:'Please enter a question first.', anonymous:'Anonymous', asked_by:'Asked by', replies:'replies',
+    guide_download:'Download →', guide_alert:'Attach your real PDF file to this link before launch.',
+    footer_copyright:'© 2026 ScholarWalk. All rights reserved.',
+    toast_h4:'Great study session! 🎉', toast_p:"Need someone to proofread that essay you're working on? Our expert editors are ready.",
+    toast_cta:'Get started — $25', toast_dismiss:'Not now'
+  },
+  ar:{
+    lounge_brand:'ركن ScholarWalk للدراسة', nav_home:'الرئيسية', nav_universities:'الجامعات', nav_scholarships:'المنح الدراسية', nav_pricing:'قدّم هنا', back_home:'→ العودة للرئيسية',
+    lounge_eyebrow:'ركن دراسة مريح', lounge_title:'خذ استراحة تركيز', lounge_sub:'25 دقيقة من التركيز العميق. بلا إشعارات، فقط أنت والمطر.',
+    timer_ready:'جاهز عندما تكون مستعدًا', timer_start:'ابدأ الدراسة', timer_reset:'إعادة ضبط', timer_pause:'إيقاف مؤقت', timer_resume:'استئناف',
+    timer_in_progress:'جلسة تركيز قيد التقدم…', timer_complete:'اكتملت الجلسة — عمل رائع!', timer_paused:'متوقف مؤقتًا',
+    sessions_today:'الجلسات المكتملة اليوم:', now_playing:'قيد التشغيل الآن',
+    asset_note:'يتم تشغيل نغمة توضيحية — أضف مقاطعك الصوتية الحرة الخاصة بك (لو-فاي) في مصفوفة TRACKS أعلى الكود لاستبدالها.',
+    res_blog_eyebrow:'من المدونة', res_articles_h2:'مقالات مختارة', res_articles_p:'نصائح عملية من واقع تجربة التقديم.', sample_tag_articles:'محتوى توضيحي — استبدله بمقالات حقيقية',
+    res_free_eyebrow:'موارد مجانية', res_guides_h2:'أدلة وملفات قابلة للتحميل', res_guides_p:'قوائم تحقق وقوالب يمكنك استخدامها فورًا.', sample_tag_guides:'روابط توضيحية — أرفق ملفات PDF حقيقية قبل الإطلاق',
+    res_community_eyebrow:'المجتمع', res_community_h2:'اسأل المجتمع', res_community_p:'أسئلة من طلاب مثلك تمامًا.',
+    qa_confirm:'✓ شكرًا — تم إرسال سؤالك. سيتواصل معك فريقنا (والمجتمع) قريبًا.',
+    qa_name_ph:'اسمك (أو اتركه فارغًا لتبقى مجهولاً)', qa_question_ph:'ما الذي تريد أن تسأل عنه؟', qa_submit:'نشر السؤال',
+    qa_need_question:'يرجى إدخال سؤال أولاً.', anonymous:'مجهول', asked_by:'سأل', replies:'ردود',
+    guide_download:'تحميل ←', guide_alert:'أرفق ملف PDF الحقيقي بهذا الرابط قبل الإطلاق.',
+    footer_copyright:'© 2026 ScholarWalk. جميع الحقوق محفوظة.',
+    toast_h4:'جلسة دراسة رائعة! 🎉', toast_p:'تحتاج من يراجع المقال الذي تعمل عليه؟ محررونا الخبراء جاهزون.',
+    toast_cta:'ابدأ الآن — 25$', toast_dismiss:'ليس الآن'
+  }
+};
+
+function applyLang(lang){
+  currentLang = lang;
+  try{ localStorage.setItem('scholarwalk_lang', lang); }catch(e){}
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langLabel').textContent = lang === 'ar' ? 'AR' : 'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(t[lang][key] !== undefined) el.textContent = t[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(t[lang][key] !== undefined) el.setAttribute('placeholder', t[lang][key]);
+  });
+  renderArticles(lang);
+  renderGuides(lang);
+  renderQaThreads(lang);
+  if(!timerRunning){ timerToggle.textContent = t[lang].timer_start; }
+  renderTicker(lang);
+}
+document.getElementById('langToggle').addEventListener('click', ()=>{
+  applyLang(currentLang === 'en' ? 'ar' : 'en');
+});
+
+let savedLang = 'ar';
+try{ savedLang = localStorage.getItem('scholarwalk_lang') || 'ar'; }catch(e){}
+applyLang(savedLang);
+</script>
+</body>
+</html>
